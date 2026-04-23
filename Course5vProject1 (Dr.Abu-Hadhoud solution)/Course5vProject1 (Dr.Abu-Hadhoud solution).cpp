@@ -163,6 +163,12 @@ void ShowGameOverScreen() {
     cout << Tabs(2) << "-------------------------------------------------------------------------\n\n";
 }
 
+void ResetScreen()
+{
+    system("cls");
+    system("color 0f");
+}
+
 stGameResults PlayGame(short HowManyRounds)
 {
     stRoundInfo RoundInfo;
@@ -196,7 +202,7 @@ void StartGame()
 
     do
     {
-        system("cls");
+        ResetScreen();
         stGameResults GameResults = PlayGame(ReadHowManyRounds());
         ShowGameOverScreen();
         ShowFinalGameResults(GameResults);
