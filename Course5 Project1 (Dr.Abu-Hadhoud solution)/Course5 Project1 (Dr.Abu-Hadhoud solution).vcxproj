@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{9e899707-2dc6-4b22-a87d-5549aa5ff103}</ProjectGuid>
-    <RootNamespace>Course5vProject1DrAbuHadhoudsolution</RootNamespace>
+    <ProjectGuid>{e57f763d-e386-45e0-8c29-c937e279ae78}</ProjectGuid>
+    <RootNamespace>Course5Project1DrAbuHadhoudsolution</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Course5vProject1 (Dr.Abu-Hadhoud solution).cpp" />
+    <ClCompile Include="Course5 Project1 (Dr.Abu-Hadhoud solution).cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
