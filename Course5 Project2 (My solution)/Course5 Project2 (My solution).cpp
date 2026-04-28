@@ -144,10 +144,16 @@ stGameResults FillGameResults(short NumberOfQuestions, enLevel Level, enOpType O
 
 void ShowFinalResults(stGameResults GameResults)
 {
-    if (GameResults.RightAnswersNumber > GameResults.WrongAnswersNumber)
+    if (GameResults.RightAnswersNumber >= GameResults.WrongAnswersNumber)
+    {
         cout << "Final Result is PASS :-)";
+        system("color 2F");
+    }
     else
+    {
         cout << "Final Result is FAIL :-(";
+        system("color 4");
+    }
 }
 
 void PrintQuizzResults(stGameResults GameResults)
