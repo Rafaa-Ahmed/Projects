@@ -381,7 +381,8 @@ void PrintClientData(stClientRecord Client)
 
 void GoBackToMainMenu()
 {
-    system("pause");
+    cout << "\n\nPress any key to continue...";
+    system("pause >0");
 
     system("cls");
     MainMenu();
