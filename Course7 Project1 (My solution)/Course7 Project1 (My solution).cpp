@@ -601,23 +601,21 @@ void TotalBalancesScreen(vector <stClientRecord> vClientsRecords)
     cout << "| " << left << setw(10) << "Balance";
 
     cout << "\n____________________________________________________________________________________________________________________\n";
-
+   
+    double Sum = 0;
     for (const stClientRecord& C : vClientsRecords)
     {
         cout << "| " << left << setw(16) << C.AccountNumber;
         cout << "| " << left << setw(30) << C.Name;
         cout << "| " << left << setw(10) << C.AccountBalance;
-
+       
         cout << endl;
+
+        Sum += C.AccountBalance;
     }
 
     cout << "\n____________________________________________________________________________________________________________________\n";
 
-    double Sum = 0;
-    for (const stClientRecord& C : vClientsRecords)
-    {
-        Sum += C.AccountBalance;
-    }
 
     cout << "\t\t\t\t\tTotal Balances = " << Sum;
 
