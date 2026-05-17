@@ -15,7 +15,8 @@ enum enChoice
     Delete = 3,
     Update = 4,
     Find = 5,
-    Exit = 6
+    Transaction = 6,
+    Exit = 7
 };
 
 struct stClientRecord
@@ -31,6 +32,7 @@ struct stClientRecord
 // Prototypes
 void MainMenu();
 void MoveToScreen(enChoice Choice, vector<stClientRecord>& vClientsRecords);
+void TransactionsScreen(vector <stClientRecord>& vClientsRecords);
 
 enChoice GetChoice(short Choice)
 {
@@ -52,6 +54,9 @@ enChoice GetChoice(short Choice)
         return enChoice::Find;
 
     case 6:
+        return enChoice::Transaction;
+
+    case 7:
         return enChoice::Exit;
 
     default:
@@ -316,9 +321,7 @@ bool UpdateClientByAccountNumber(string AccountNumber, vector<stClientRecord>& v
                 }
             }
 
-            SaveClientsDataToFile(
-                vClientsRecords,
-                ClientsFileName);
+            SaveClientsDataToFile(vClientsRecords, ClientsFileName);
 
             cout << "\nClient updated successfully.\n";
 
@@ -478,6 +481,196 @@ void FindClientScreen(vector<stClientRecord>& vClientsRecords)
     GoBackToMainMenu();
 }
 
+enum enTransaction 
+{
+    Deposit = 1,
+    Withdraw = 2,
+    TotalBalances = 3,
+    GoToMainMenu = 4
+};
+
+void GoBackToTransactionMenu(vector <stClientRecord>& vClientsRecords)
+{
+    cout << "\n\nPress any key to go back to Transactions Menu...";
+    system("pause >0");
+
+    system("cls");
+    TransactionsScreen(vClientsRecords);
+}
+
+double DepositBalance(double Amount, stClientRecord& Client)
+{
+    return Client.AccountBalance + Amount;
+}
+
+void DepositScreen(vector <stClientRecord>& vClientsRecords)
+{
+    cout << "---------------------------------------------\n";
+
+    cout << "\t\t Deposit Screen\n";
+
+    cout << "---------------------------------------------\n";
+
+    stClientRecord Client;
+    string AccountNumber = ReadClientAccountNumber();
+
+    while (!FindClientByAccountNumber(AccountNumber, vClientsRecords, Client))
+    {
+        cout << "\nClient with account number (" << AccountNumber << ") is not found.\n";
+        AccountNumber = ReadClientAccountNumber();
+    }
+
+    PrintClientCard(Client);
+
+    double Amount;
+    cout << "\nPlease enter deposit amount? ";
+    cin >> Amount;
+
+    for (stClientRecord& C : vClientsRecords)
+    {
+        if (C.AccountNumber == AccountNumber)
+        {
+            C.AccountBalance = DepositBalance(Amount, Client);
+            break;
+        }
+    }
+
+    SaveClientsDataToFile(vClientsRecords, ClientsFileName);
+
+}
+
+void WithdrawScreen(vector <stClientRecord>& vClientsRecords)
+{
+    cout << "---------------------------------------------\n";
+
+    cout << "\t\t Withdraw Screen\n";
+
+    cout << "---------------------------------------------\n";
+
+    stClientRecord Client;
+    char Answer = 'n';
+    string AccountNumber = ReadClientAccountNumber();
+
+    while (!FindClientByAccountNumber(AccountNumber, vClientsRecords, Client))
+    {
+        cout << "\nClient with account number (" << AccountNumber << ") is not found.\n";
+        AccountNumber = ReadClientAccountNumber();
+    }
+
+    PrintClientCard(Client);
+
+    double Amount;
+    cout << "\nPlease enter withdraw amount? ";
+    cin >> Amount;
+
+    while (Amount > Client.AccountBalance)
+    {
+        cout << "\nAmount exceeds the balance, you can withdraw up to : " << Client.AccountBalance;
+        cout << "\nPlease enter another amount? ";
+        cin >> Amount;
+    }
+
+    cout << "\nAre you sure you want to withdraw? Y/N? " << Amount << " ? ";
+    cin >> Answer;
+
+    if (toupper(Answer) == 'Y')
+    {
+
+        for (stClientRecord& C : vClientsRecords)
+        {
+            if (C.AccountNumber == AccountNumber)
+            {
+                C.AccountBalance = DepositBalance(-Amount, Client);
+                break;
+            }
+        }
+
+        SaveClientsDataToFile(vClientsRecords, ClientsFileName);
+    }
+
+}
+
+void TotalBalancesScreen(vector <stClientRecord> vClientsRecords)
+{
+    cout << "\t\t\t\tClient List (" << vClientsRecords.size() << ") Client(s).";
+
+    cout << "\n____________________________________________________________________________________________________________________\n";
+
+    cout << "| " << left << setw(16) << "Account Number";
+    cout << "| " << left << setw(30) << "Client Name";
+    cout << "| " << left << setw(10) << "Balance";
+
+    cout << "\n____________________________________________________________________________________________________________________\n";
+
+    for (const stClientRecord& C : vClientsRecords)
+    {
+        cout << "| " << left << setw(16) << C.AccountNumber;
+        cout << "| " << left << setw(30) << C.Name;
+        cout << "| " << left << setw(10) << C.AccountBalance;
+
+        cout << endl;
+    }
+
+    cout << "\n____________________________________________________________________________________________________________________\n";
+
+    double Sum = 0;
+    for (const stClientRecord& C : vClientsRecords)
+    {
+        Sum += C.AccountBalance;
+    }
+
+    cout << "\t\t\t\t\tTotal Balances = " << Sum;
+
+}
+
+void PerformTransaction(enTransaction Choice, vector<stClientRecord>& vClientsRecords)
+{
+    system("cls");
+
+    switch (Choice)
+    {
+    case enTransaction::Deposit:
+        DepositScreen(vClientsRecords);
+        GoBackToTransactionMenu(vClientsRecords);
+        break;
+    case enTransaction::Withdraw:
+        WithdrawScreen(vClientsRecords);
+        GoBackToTransactionMenu(vClientsRecords);
+        break;
+    case enTransaction::TotalBalances:
+        TotalBalancesScreen(vClientsRecords);
+        GoBackToTransactionMenu(vClientsRecords);
+        break;
+    case enTransaction::GoToMainMenu:
+        MainMenu();
+        break;
+    default:
+        GoBackToTransactionMenu(vClientsRecords);
+    }
+}
+
+void TransactionsScreen(vector <stClientRecord>& vClientsRecords)
+{
+    cout << "==============================================\n";
+
+    cout << "\t\tTransactions Menu Screen\n";
+
+    cout << "==============================================\n";
+
+    cout << "\t[1] Deposit.\n";
+    cout << "\t[2] Withdraw.\n";
+    cout << "\t[3] Total Balances.\n";
+    cout << "\t[4] Main Menu.\n";
+
+    cout << "==============================================\n";
+
+    short Choice;
+    cout << "Choose what do you want to do? [1 to 4]? ";
+    cin >> Choice;
+
+    PerformTransaction((enTransaction)Choice, vClientsRecords);
+}
+
 void ExitScreen()
 {
     cout << "---------------------------------------------\n";
@@ -513,6 +706,10 @@ void MoveToScreen(enChoice Choice, vector<stClientRecord>& vClientsRecords)
         FindClientScreen(vClientsRecords);
         break;
 
+    case enChoice::Transaction:
+        TransactionsScreen(vClientsRecords);
+        break;
+
     case enChoice::Exit:
         ExitScreen();
         break;
@@ -536,11 +733,12 @@ void MainMenu()
     cout << "\t[3] Delete Client.\n";
     cout << "\t[4] Update Client Info.\n";
     cout << "\t[5] Find Client.\n";
-    cout << "\t[6] Exit.\n";
+    cout << "\t[6] Transactions.\n";
+    cout << "\t[7] Exit.\n";
 
     cout << "=========================================\n";
 
-    cout << "Choose what you want to do? [1 to 6]? ";
+    cout << "Choose what you want to do? [1 to 7]? ";
 
     cin >> Choice;
 
