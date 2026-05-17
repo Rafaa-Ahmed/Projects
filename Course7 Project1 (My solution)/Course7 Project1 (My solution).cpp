@@ -498,9 +498,28 @@ void GoBackToTransactionMenu(vector <stClientRecord>& vClientsRecords)
     TransactionsScreen(vClientsRecords);
 }
 
-double DepositBalance(double Amount, stClientRecord& Client)
+bool DepositBalance(string AccountNumber, double Amount, vector <stClientRecord>& vClientsRecords)
 {
-    return Client.AccountBalance + Amount;
+    char Answer = 'n';
+    cout << "\n\nAre you sure you want to perform this transaction? Y/N? ";
+    cin >> Answer;
+
+    if (toupper(Answer) == 'Y')
+    {
+
+        for (stClientRecord& C : vClientsRecords)
+        {
+            if (C.AccountNumber == AccountNumber)
+            {
+                C.AccountBalance += Amount;
+                SaveClientsDataToFile(vClientsRecords, ClientsFileName);
+                cout << "\nTransaction done successfuly. New balance is " << C.AccountBalance;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void DepositScreen(vector <stClientRecord>& vClientsRecords)
@@ -523,20 +542,18 @@ void DepositScreen(vector <stClientRecord>& vClientsRecords)
     PrintClientCard(Client);
 
     double Amount;
-    cout << "\nPlease enter deposit amount? ";
+    cout << "\nPlease enter withdraw amount? ";
     cin >> Amount;
 
-    for (stClientRecord& C : vClientsRecords)
+    while (Amount > Client.AccountBalance)
     {
-        if (C.AccountNumber == AccountNumber)
-        {
-            C.AccountBalance = DepositBalance(Amount, Client);
-            break;
-        }
+        cout << "\nAmount exceeds the balance, you can withdraw up to : " << Client.AccountBalance;
+        cout << "\nPlease enter another amount? ";
+        cin >> Amount;
     }
 
-    SaveClientsDataToFile(vClientsRecords, ClientsFileName);
-
+    DepositBalance(AccountNumber, Amount, vClientsRecords);
+  
 }
 
 void WithdrawScreen(vector <stClientRecord>& vClientsRecords)
@@ -548,7 +565,6 @@ void WithdrawScreen(vector <stClientRecord>& vClientsRecords)
     cout << "---------------------------------------------\n";
 
     stClientRecord Client;
-    char Answer = 'n';
     string AccountNumber = ReadClientAccountNumber();
 
     while (!FindClientByAccountNumber(AccountNumber, vClientsRecords, Client))
@@ -570,23 +586,7 @@ void WithdrawScreen(vector <stClientRecord>& vClientsRecords)
         cin >> Amount;
     }
 
-    cout << "\nAre you sure you want to withdraw? Y/N? " << Amount << " ? ";
-    cin >> Answer;
-
-    if (toupper(Answer) == 'Y')
-    {
-
-        for (stClientRecord& C : vClientsRecords)
-        {
-            if (C.AccountNumber == AccountNumber)
-            {
-                C.AccountBalance = DepositBalance(-Amount, Client);
-                break;
-            }
-        }
-
-        SaveClientsDataToFile(vClientsRecords, ClientsFileName);
-    }
+    DepositBalance(AccountNumber, -Amount, vClientsRecords);
 
 }
 
